@@ -73,9 +73,29 @@ $app->configure('app');
 */
 
 $app->middleware([
-    App\Http\Middleware\ExampleMiddleware::class
+    // Other middleware
+    Illuminate\Session\Middleware\StartSession::class,
 ]);
 
+$app->singleton(
+    Illuminate\Session\SessionManager::class,
+    function () use ($app) {
+        return $app->make('session');
+    }
+);
+
+$app->singleton(
+    'session',
+    function () use ($app) {
+        return $app->loadComponent(
+            'session',
+            Illuminate\Session\SessionServiceProvider::class,
+            'session'
+        );
+    }
+);
+
+// Register middleware
 $app->routeMiddleware([
     'auth' => App\Http\Middleware\Authenticate::class,
 ]);
